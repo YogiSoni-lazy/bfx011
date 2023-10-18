@@ -46,7 +46,73 @@ class Breakfix011Maintenancelvm2(Default):
         userinterface.Console(items).run_items(action="Starting")
 
     def grade(self):
-        items = []
+        """
+        Perform evaluation steps on the system
+        """
+        items = [
+            {
+                "label": "Checking lab systems",
+                "task": labtools.check_host_reachable,
+                "hosts": _targets,
+                "fatal": True,
+            },
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command="[ ! -z $(systemctl list-units --type target --state active | grep -o $(systemctl get-default)) ] 2>> /dev/null",
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command="[[ ! -z $(pvscan 2>&1 | grep -o "PV /dev/vdb  VG vg01") ]] 2>> /dev/null",
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ ! -z "$(blkid|grep -o /dev/mapper/vg01-lv01)" ] 2>> /dev/null''',
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ ! -z $(lvs 2>> /dev/null | awk '($2=="vg01"){print $3}' | grep -o a) ]''',
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ ! -z "$(grep /dev/mapper/vg01-lv01 /proc/self/mounts|grep -o "/mnt/data")" ] &>> /dev/null''',
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ -z "$(egrep "root|swap|app" /tmp/fstab-capture.out 2>&1|egrep -o "#|No")" ] &>> /dev/null''',
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ ! -z "$(grep /dev/mapper/vg01-lv01 /tmp/mounts-capture.out 2>/dev/null|grep -o "/mnt/data")" ] &>> /dev/null''',
+                returns="0",
+                shell=True,
+            ),
+            steps.run_command(
+                label="Verifying lab system " + _servera,
+                hosts=[_servera],
+                command='''[ -z "$(journalctl -xb | grep -o emergency | sort -u)" ] &>> /dev/null''',
+                returns="0",
+                shell=True,
+            ),
+        ]
         ui = userinterface.Console(items)
         ui.run_items(action="Grading")
         ui.report_grade()
