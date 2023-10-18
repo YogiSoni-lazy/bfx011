@@ -118,5 +118,30 @@ class Breakfix011Maintenancelvm2(Default):
         ui.report_grade()
 
     def finish(self):
-        items = []
+        items = [
+            {
+                "label": "Checking lab systems",
+                "task": labtools.check_host_reachable,
+                "hosts": _targets,
+                "fatal": True,
+            },
+            steps.run_command(
+                label="Removing the settings from " + _servera,
+                hosts=[_servera],
+                command='''
+                umount /mnt/data;
+                rm -rf /mnt/data;
+                lvremove -f /dev/vg01/lv01;
+                vgremove vg01;
+                pvremove /dev/vdb1;
+                egrep -v -e '/dev/vg01/lv01 /mnt/data xfs defaults 0 0' /etc/fstab > /tmp/fstab && mv -f /tmp/fstab /etc/fstab;
+                # fix;
+                # mount -o remount,rw /
+                # lvextend -L 1G /dev/mapper/application-app
+                # mount -a
+                # reboot
+                ''',
+                shell=True,
+            ),
+        ]
         userinterface.Console(items).run_items(action="Finishing")
