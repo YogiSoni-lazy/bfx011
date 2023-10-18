@@ -35,9 +35,10 @@ class Breakfix011Maintenancelvm2(Default):
                 mkdir /mnt/data;
                 mount /dev/vg01/lv01 /mnt/data;
                 echo '/dev/vg01/lv01 /mnt/data xfs defaults 0 0' | sudo  tee -a /etc/fstab;
-                yes | lvreduce -L 500M /dev/vg01/lv01
-                echo '/usr/bin/cp /etc/fstab /tmp/fstab-capture.out' >> /etc/rc.d/rc.local
-                echo '/usr/bin/cp /proc/self/mounts /tmp/mounts-capture.out' >> /etc/rc.d/rc.local
+                yes | lvreduce -L 500M /dev/vg01/lv01;
+                echo '/usr/bin/cp /etc/fstab /tmp/fstab-capture.out' >> /etc/rc.d/rc.local;
+                echo '/usr/bin/cp /proc/self/mounts /tmp/mounts-capture.out' >> /etc/rc.d/rc.local;
+                reboot;
                 ''',
                 shell=True,
             ),
