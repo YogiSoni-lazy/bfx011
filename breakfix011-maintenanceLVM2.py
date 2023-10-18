@@ -66,7 +66,7 @@ class Breakfix011Maintenancelvm2(Default):
             steps.run_command(
                 label="Verifying lab system " + _servera,
                 hosts=[_servera],
-                command='''[[ ! -z $(pvscan 2>&1 | grep -o "PV /dev/vdb  VG vg01") ]] 2>> /dev/null''',
+                command='''[[ ! -z $(pvscan 2>&1 | grep -o "PV /dev/vdb   VG vg01") ]] 2>> /dev/null''',
                 returns="0",
                 shell=True,
             ),
