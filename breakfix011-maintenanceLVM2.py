@@ -28,7 +28,7 @@ class Breakfix011Maintenancelvm2(Default):
                 label="Configuring " + _servera,
                 hosts=[_servera],
                 command='''
-                pvcreate /dev/vdb;
+                pvcreate -f /dev/vdb;
                 vgcreate vg01 /dev/vdb;
                 lvcreate -L 800M -n lv01 vg01;
                 mkfs.xfs /dev/vg01/lv01;
